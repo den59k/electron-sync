@@ -1,0 +1,21 @@
+{
+  "name": "electron-sync",
+  "version": "1.0.0",
+  "description": "Syncronize store between main and renderer processes",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "author": "den59k",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/den59k/electron-sync.git"
+  },
+  "files": [
+    "lib"
+  ],
+  "devDependencies": {
+    "@types/node": "^18.7.11",
+    "electron": "^20.0.3",
+    "typescript": "^4.7.4"
+  }
+}
