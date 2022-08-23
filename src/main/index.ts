@@ -3,6 +3,7 @@ import { toJS } from "./to-js"
 import { syncGet } from "./utils"
 
 export type BaseKey = (string | number)[]
+export { proxyMethods } from './proxy-methods'
 
 const objects = new Map<string, object>()
 const subs = new Map<string, WebContents[]>()

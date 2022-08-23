@@ -1,3 +1,1 @@
-export { proxy, bridge } from './preload'
-export { syncRenderer } from './renderer'
-export { syncMain } from './main'
+export { syncMain, proxyMethods } from './main'
