@@ -1,7 +1,7 @@
 
-const objects = new Map<string, object>()
+const objects = new Map<string, object>();
 
-window.electron.on('sync', (e, baseKey: string[], command: string, ...args: any) => {
+(window as any).electron.on('sync', (e, baseKey: string[], command: string, ...args: any) => {
   const item = objects.get(baseKey[0])
   if (!item) return
   
@@ -33,7 +33,7 @@ export const syncRenderer: IOverload = (channel: string, callback?: (obj: any) =
   const item = objects.get(channel)
   if (item) return item as any
 
-  const _obj = window.electron.sync(channel)
+  const _obj = (window as any).electron.sync(channel)
   const obj = callback? callback(_obj): _obj
   objects.set(channel, obj)
 
