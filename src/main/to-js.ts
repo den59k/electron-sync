@@ -1,5 +1,6 @@
 export const toJS = (obj: any) => {
   if (typeof obj !== "object") return obj
+  if (!obj) return obj
 
   if (Array.isArray(obj)) {
     const copy = [ ...obj ]

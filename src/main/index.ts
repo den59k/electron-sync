@@ -30,9 +30,10 @@ export const send = (baseKey: BaseKey, command: string, ...args: any) => {
 
 export const syncMain = <T extends object>(obj: T, baseKey: BaseKey): T => {
   if (typeof obj !== "object") return obj
+  if (!obj) return obj
 
   for (let prop in obj) {
-    if (typeof obj[prop] !== "object") continue
+    if (!obj[prop] || typeof obj[prop] !== "object") continue
     obj[prop] = syncMain(obj[prop] as any, [ ...baseKey, prop ])
   }
 
