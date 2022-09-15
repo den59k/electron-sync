@@ -20,7 +20,12 @@ const objects = new Map<string, object>();
   }
 
   if ([ 'push', 'unshift', 'pop', 'shift', 'splice', 'set', 'add', 'delete', 'clear' ].includes(command)) {
-    obj[key][command](...args)
+    // console.log(obj, key, command, args)
+    if (obj instanceof Map) {
+      obj.get(key)[command](...args)
+    } else {
+      obj[key][command](...args)
+    }
   }
 })
 

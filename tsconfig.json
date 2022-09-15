@@ -24,6 +24,8 @@
       "resolveJsonModule": true
   },
   "files": [
-      "src/index.ts"
+      "src/index.ts",
+      "src/renderer/index.ts",
+      "src/main/index.ts"
   ]
 }
