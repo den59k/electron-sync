@@ -1,4 +1,4 @@
-import { ipcMain, WebContents } from "electron"
+import { ipcMain, webContents } from "electron"
 import { toJS } from "./to-js"
 import { syncGet } from "./utils"
 
@@ -6,26 +6,39 @@ export type BaseKey = (string | number)[]
 export { proxyMethods } from './proxy-methods'
 
 const objects = new Map<string, object>()
-const subs = new Map<string, WebContents[]>()
+const subs = new Map<number, Set<string>>()
 
 ipcMain.on("sync", (e, channel: string) => {
-  const arr = subs.get(channel) || []
-  if (!arr.find(item => item.id === e.sender.id)) {
-    arr.push(e.sender)
-    subs.set(channel, arr)
-  }
-
+  const set = subs.get(e.sender.id) || new Set()
+  set.add(channel)
+  subs.set(e.sender.id, set)
   e.returnValue = toJS(objects.get(channel)) || null
 })
 
+let flagNextTick = false
+let toSend: [ BaseKey, string, ...any ][] = []
 export const send = (baseKey: BaseKey, command: string, ...args: any) => {
-  const sub = subs.get(baseKey[0] as string)
-  if (!sub) return
-
-  for (let webContent of sub) {
-    if (webContent.isDestroyed()) continue
-    webContent.send('sync', baseKey, command, ...args)
+  toSend.push([ baseKey, command, ...args.map((item: any) => toJS(item)) ])
+  if (!flagNextTick) {
+    process.nextTick(sendOnNextTick)
+    flagNextTick = true
   }
+}
+
+const sendOnNextTick = () => {
+  for (let [ id, set ] of subs) {
+    const webContent = webContents.fromId(id)
+    if (!webContent || webContent.isDestroyed()) {
+      subs.delete(id) 
+      continue
+    }
+    const arr = toSend.filter(i => set.has(i[0][0] as string))
+    if (arr.length === 0) continue
+    webContent.send('sync', arr)
+  }
+
+  flagNextTick = false
+  toSend = []
 }
 
 export const syncMain = <T extends object>(obj: T, baseKey: BaseKey): T => {

@@ -1,30 +1,32 @@
 
 const objects = new Map<string, object>();
 
-(window as any).electron.on('sync', (e, baseKey: string[], command: string, ...args: any) => {
-  const item = objects.get(baseKey[0])
-  if (!item) return
-  
-  let obj: any = item
-  const key = baseKey[baseKey.length-1]
+(window as any).electron.on('sync', (e, arr: [ string[], string, ...any ][]) => {
+  for (let [ baseKey, command, ...args ] of arr) {
+    const item = objects.get(baseKey[0])
+    if (!item) return
+    
+    let obj: any = item
+    const key = baseKey[baseKey.length-1]
 
-  for (let i = 1; i < baseKey.length-1; i++) {
-    if (obj instanceof Map) {
-      obj = obj.get(baseKey[i])
-      continue
+    for (let i = 1; i < baseKey.length-1; i++) {
+      if (obj instanceof Map) {
+        obj = obj.get(baseKey[i])
+        continue
+      }
+      obj = obj[baseKey[i]]
     }
-    obj = obj[baseKey[i]]
-  }
-  if (command === "_set") {
-    obj[key] = args[0]
-  }
+    if (command === "_set") {
+      obj[key] = args[0]
+    }
 
-  if ([ 'push', 'unshift', 'pop', 'shift', 'splice', 'set', 'add', 'delete', 'clear' ].includes(command)) {
-    // console.log(obj, key, command, args)
-    if (obj instanceof Map) {
-      obj.get(key)[command](...args)
-    } else {
-      obj[key][command](...args)
+    if ([ 'push', 'unshift', 'pop', 'shift', 'splice', 'set', 'add', 'delete', 'clear' ].includes(command)) {
+      // console.log(obj, key, command, args)
+      if (obj instanceof Map) {
+        obj.get(key)[command](...args)
+      } else {
+        obj[key][command](...args)
+      }
     }
   }
 })

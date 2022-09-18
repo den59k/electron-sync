@@ -2,6 +2,8 @@
 
 The library is provided to synchronize data between the main process and the renderer
 
+Yeah, it is supports batching. All sync process exec in `nextTick`
+
 ## Structure
 
 Code splited on 3 parts:
@@ -20,7 +22,7 @@ import { syncMain, proxyMethods } from '@den59k/electron-sync/lib/main'
 Renderer containts methods for renderer process
 
 ```
-import { syncRenderer } from '@den59k/electron-sync/lib/main'
+import { syncRenderer } from '@den59k/electron-sync/lib/renderer'
 
 ```
 
