@@ -6,7 +6,7 @@ Yeah, it is supports batching. All sync process exec in `nextTick`
 
 ## Structure
 
-Code splited on 3 parts:
+Code splited on 3 parts. for better performance you should import files from subdirectories.
 
 ### Main
 
@@ -24,6 +24,22 @@ Renderer containts methods for renderer process
 ```
 import { syncRenderer } from '@den59k/electron-sync/lib/renderer'
 
+```
+
+You can use it like this:
+
+```
+const data = syncRenderer('account', (obj: AccountData) => reactive(obj))
+```
+
+#### React + Mobx
+
+If you are using React and mobx, you can set the action wrapper for all sync calls:
+
+```
+import { setActionWrapper } from '@den59k/electron-sync/lib/renderer'
+
+setActionWrapper(action)
 ```
 
 ### Preload 

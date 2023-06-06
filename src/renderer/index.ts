@@ -1,7 +1,11 @@
+import type { IpcRendererEvent } from "electron";
 
 const objects = new Map<string, object>();
 
-(window as any).electron.on('sync', (e, arr: [ string[], string, ...any ][]) => {
+type SyncWrapper = (callback: (e: IpcRendererEvent, arr: SyncArgs) => void) => (e: IpcRendererEvent, arr: SyncArgs) => void
+type SyncArgs = [ string[], string, ...any ][]
+
+const onSyncEvent = (e: IpcRendererEvent, arr: SyncArgs) => {
   for (let [ baseKey, command, ...args ] of arr) {
     const item = objects.get(baseKey[0])
     if (!item) return
@@ -29,7 +33,18 @@ const objects = new Map<string, object>();
       }
     }
   }
-})
+}
+
+const _window = window as any
+
+let _onSyncEvent = onSyncEvent
+_window.electron.on('sync', _onSyncEvent)
+
+export const setActionWrapper = (wrapper: SyncWrapper) => {
+  _window.electron.off('sync', _onSyncEvent)
+  _onSyncEvent = wrapper(onSyncEvent)
+  _window.electron.on('sync', _onSyncEvent)
+}
 
 type IOverload = {
   <T extends object>(channel: string): T;
@@ -40,7 +55,7 @@ export const syncRenderer: IOverload = (channel: string, callback?: (obj: any) =
   const item = objects.get(channel)
   if (item) return item as any
 
-  const _obj = (window as any).electron.sync(channel)
+  const _obj = _window.electron.sync(channel)
   const obj = callback? callback(_obj): _obj
   objects.set(channel, obj)
 
