@@ -1,4 +1,5 @@
 import type { IpcRendererEvent } from "electron";
+import type { bridge } from '../preload'
 
 const objects = new Map<string, object>();
 
@@ -6,9 +7,10 @@ type SyncWrapper = (callback: (e: IpcRendererEvent, arr: SyncArgs) => void) => (
 type SyncArgs = [ string[], string, ...any ][]
 
 const onSyncEvent = (e: IpcRendererEvent, arr: SyncArgs) => {
+  console.log(arr)
   for (let [ baseKey, command, ...args ] of arr) {
     const item = objects.get(baseKey[0])
-    if (!item) return
+    if (!item) continue
     
     let obj: any = item
     const key = baseKey[baseKey.length-1]
@@ -35,15 +37,13 @@ const onSyncEvent = (e: IpcRendererEvent, arr: SyncArgs) => {
   }
 }
 
-const _window = window as any
+const _window = window as unknown as (Window & { electron: typeof bridge })
 
-let _onSyncEvent = onSyncEvent
-_window.electron.on('sync', _onSyncEvent)
+let syncEventDispose = _window.electron.addListener('sync', onSyncEvent)
 
 export const setActionWrapper = (wrapper: SyncWrapper) => {
-  _window.electron.off('sync', _onSyncEvent)
-  _onSyncEvent = wrapper(onSyncEvent)
-  _window.electron.on('sync', _onSyncEvent)
+  syncEventDispose()
+  syncEventDispose = _window.electron.addListener('sync', wrapper(onSyncEvent))
 }
 
 type IOverload = {

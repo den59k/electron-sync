@@ -24,12 +24,16 @@ export const proxy = <T>(
   return obj
 }
 
+type ListenerDisposer = () => void
+
 export const bridge = {
-  on: (channel: string, listener: (e: IpcRendererEvent, ...args: any[]) => void) => {
-    ipcRenderer.on(channel, listener)
+  addListener(channel: string, listener: (e: IpcRendererEvent, ...args: any[]) => void): ListenerDisposer {
+    ipcRenderer.addListener(channel, listener)
     return () => ipcRenderer.removeListener(channel, listener)
   },
-  sync: (channel: string) => ipcRenderer.sendSync('sync', channel)
+  sync(channel: string) {
+    return ipcRenderer.sendSync('sync', channel)
+  }
 }
 
 export type electronAPI = typeof bridge

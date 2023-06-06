@@ -26,6 +26,7 @@
   "files": [
       "src/index.ts",
       "src/renderer/index.ts",
-      "src/main/index.ts"
+      "src/main/index.ts",
+      "src/preload.ts"
   ]
 }
