@@ -1,6 +1,6 @@
 {
   "name": "@den59k/electron-sync",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Syncronize store between main and renderer processes",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
