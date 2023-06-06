@@ -7,7 +7,6 @@ type SyncWrapper = (callback: (e: IpcRendererEvent, arr: SyncArgs) => void) => (
 type SyncArgs = [ string[], string, ...any ][]
 
 const onSyncEvent = (e: IpcRendererEvent, arr: SyncArgs) => {
-  console.log(arr)
   for (let [ baseKey, command, ...args ] of arr) {
     const item = objects.get(baseKey[0])
     if (!item) continue
@@ -27,7 +26,6 @@ const onSyncEvent = (e: IpcRendererEvent, arr: SyncArgs) => {
     }
 
     if ([ 'push', 'unshift', 'pop', 'shift', 'splice', 'set', 'add', 'delete', 'clear' ].includes(command)) {
-      // console.log(obj, key, command, args)
       if (obj instanceof Map) {
         obj.get(key)[command](...args)
       } else {
