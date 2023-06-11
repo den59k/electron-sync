@@ -17,6 +17,8 @@ import { syncMain, proxyMethods } from '@den59k/electron-sync/lib/main'
 
 ```
 
+`syncMain` is responsible for data synchronization, and `proxyMethods` is the pretty wrapper for `ipcRenderer`
+
 #### You can use it like this:
 
 For data:
@@ -86,10 +88,23 @@ import { bridge, proxy } from '@den59k/electron-sync/lib/preload'
 ```
 
 #### Example of use:
+
+As mentioned before, proxyMethods provides a pretty wrapper for the ipcRenderer->ipcMain channel. 
+
+To use it, you need to list the proxied methods in the preloader:
+
+1. First the methods that do not expect anything `ipcRenderer.send`
+
+2. Then methods that call promis and expect its result `ipcRenderer.invoke`
+
+3. And finally, methods which call synchronously and expect a synchronous response `ipcRenderer.sendSync`.
+
+P.S. Sorry about the dummy second argument hack. It is necessary because typescript does not allow to make partial generic types
+
 ```
 const electronBridge = {
   ...bridge,
-  counter: counter: proxy<typeof counterService>("counter", [ "increment" ], [], []))
+  counter: counter: proxy("counter", {} as typeof counterService, [ "increment" ], [], []))
 }
 
 contextBridge.exposeInMainWorld('electron', electronBridge)
