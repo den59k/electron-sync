@@ -87,8 +87,6 @@ And finally, scripts for preload
 import { bridge, proxy } from '@den59k/electron-sync/lib/preload'
 ```
 
-#### Example of use:
-
 As mentioned before, proxyMethods provides a pretty wrapper for the ipcRenderer->ipcMain channel. 
 
 To use it, you need to list the proxied methods in the preloader:
@@ -100,6 +98,8 @@ To use it, you need to list the proxied methods in the preloader:
 3. And finally, methods which call synchronously and expect a synchronous response `ipcRenderer.sendSync`.
 
 P.S. Sorry about the dummy second argument hack. It is necessary because typescript does not allow to make partial generic types
+
+#### Example of use:
 
 ```
 const electronBridge = {
