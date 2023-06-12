@@ -10,12 +10,12 @@ const onSyncEvent = (e: IpcRendererEvent, arr: SyncArgs) => {
   for (let [ baseKey, command, ...args ] of arr) {
     const item = objects.get(baseKey[0])
     if (!item) continue
-    
+
     let obj: any = item
     const key = baseKey[baseKey.length-1]
 
     for (let i = 1; i < baseKey.length-1; i++) {
-      if (obj instanceof Map) {
+      if (typeof obj["get"] === "function") {
         obj = obj.get(baseKey[i])
         continue
       }
